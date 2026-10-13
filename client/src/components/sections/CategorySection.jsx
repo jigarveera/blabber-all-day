@@ -15,7 +15,7 @@ export default function CategorySection({ categories, category, setCategory }) {
         Categories
       </h2>
       <div
-        className="flex gap-2 overflow-x-auto pb-2 sm:gap-3"
+        className="flex gap-2 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:gap-3"
         role="group"
         aria-label="Menu categories"
       >
