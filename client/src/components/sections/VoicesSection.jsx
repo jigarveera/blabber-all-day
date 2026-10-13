@@ -218,13 +218,14 @@ export default function VoicesSection() {
     : Math.min(360, Math.max(1, (stageWidth - 32) / 3.1))
   const centerWidth = sideWidth * 1.1
   const sideHeight = isPhone ? 390 : 420
-  const centerHeight = sideHeight * 1.1
+  const centerHeight = sideHeight * 1.1 * 1.2
   const stageHeight = centerHeight + 20
   const centerLeft = (stageWidth - centerWidth) / 2
 
   return (
     <section
       ref={sectionRef}
+      data-header-theme="light"
       aria-labelledby="voices-heading"
       className="overflow-hidden bg-[#fffaf5] py-16 text-[#241d20] sm:py-24"
     >

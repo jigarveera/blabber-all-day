@@ -44,6 +44,7 @@ export default function MenuPage() {
   const [outlet, setOutlet] = useState(savedPreferences.outlet)
   const [diet, setDiet] = useState(savedPreferences.diet)
   const [sort, setSort] = useState(savedPreferences.sort)
+  const [compact, setCompact] = useState(false)
 
   useEffect(() => {
     try {
@@ -68,18 +69,23 @@ export default function MenuPage() {
   )
 
   const activeCategory = categories.includes(category) ? category : 'All'
+  const searchWords = useMemo(
+    () => query.trim().toLowerCase().split(/\s+/).filter(Boolean),
+    [query],
+  )
 
   const items = useMemo(
     () =>
       outletItems
-        .filter(
-          (item) =>
+        .filter((item) => {
+          const searchableText = (item.name + ' ' + item.description).toLowerCase()
+
+          return (
             (activeCategory === 'All' || item.category === activeCategory) &&
             (diet === 'All' || item.diet === diet) &&
-            (item.name + ' ' + item.description)
-              .toLowerCase()
-              .includes(query.trim().toLowerCase()),
-        )
+            searchWords.every((word) => searchableText.includes(word))
+          )
+        })
         .sort((a, b) =>
           sort === 'az'
             ? a.name.localeCompare(b.name)
@@ -87,7 +93,7 @@ export default function MenuPage() {
               ? b.name.localeCompare(a.name)
               : 0,
         ),
-    [outletItems, query, activeCategory, diet, sort],
+    [outletItems, searchWords, activeCategory, diet, sort],
   )
 
   const selectOutlet = (nextOutlet) => {
@@ -103,7 +109,7 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#191518] pt-28 text-[#f5ede3] sm:pt-32">
+    <div className="min-h-screen bg-[#191518] text-[#f5ede3]">
       <LayoutGroup id="menu-outlet-selection">
         <AnimatePresence initial={false}>
           {!outlet && (
@@ -122,19 +128,24 @@ export default function MenuPage() {
           setSort={setSort}
           outlet={outlet}
           onSelectOutlet={selectOutlet}
+          compact={compact}
+          setCompact={setCompact}
         />
       </LayoutGroup>
-      <CategorySection
-        categories={categories}
-        category={activeCategory}
-        setCategory={setCategory}
-      />
-      <MenuGridSection
-        key={`${outlet ?? 'all'}|${query}|${activeCategory}|${diet}|${sort}`}
-        items={items}
-        resetFilters={resetFilters}
-        showOutlet={!outlet}
-      />
+      <div className="relative">
+        <CategorySection
+          categories={categories}
+          category={activeCategory}
+          setCategory={setCategory}
+          compact={compact}
+        />
+        <MenuGridSection
+          key={`${outlet ?? 'all'}|${query}|${activeCategory}|${diet}|${sort}`}
+          items={items}
+          resetFilters={resetFilters}
+          showOutlet={!outlet}
+        />
+      </div>
     </div>
   )
 }

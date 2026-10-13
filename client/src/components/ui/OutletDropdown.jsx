@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
 import outlets from '../../data/outlets'
 
-export default function OutletDropdown({ outlet, onSelect }) {
+export default function OutletDropdown({ outlet, onSelect, compact = false }) {
   const [open, setOpen] = useState(false)
   const dropdownRef = useRef(null)
 
@@ -28,7 +28,12 @@ export default function OutletDropdown({ outlet, onSelect }) {
   return (
     <div
       ref={dropdownRef}
-      className="absolute right-4 top-4 z-30 sm:right-6 sm:top-6"
+      className={
+        'z-30 transition-[top,right] duration-500 ease-in-out motion-reduce:transition-none ' +
+        (compact
+          ? 'fixed right-[76px] top-6 md:absolute md:right-6 md:top-24'
+          : 'absolute right-3 top-3 sm:right-6 sm:top-6')
+      }
     >
       <motion.button
         type="button"
@@ -38,7 +43,12 @@ export default function OutletDropdown({ outlet, onSelect }) {
         aria-label={`Selected outlet: ${outlet}. Choose another outlet`}
         aria-expanded={open}
         aria-controls="outlet-dropdown"
-        className="inline-flex items-center gap-2 rounded-full border border-[#d6a8c5] bg-[#aa769a] px-4 py-2.5 text-xs font-bold uppercase tracking-[.12em] text-white shadow-[0_12px_28px_rgba(0,0,0,.3)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:px-5 sm:py-3"
+        className={
+          'inline-flex items-center gap-2 rounded-full border border-[#d6a8c5] bg-[#aa769a] font-bold uppercase tracking-[.12em] text-white shadow-[0_12px_28px_rgba(0,0,0,.3)] transition-[padding,font-size] duration-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white motion-reduce:transition-none ' +
+          (compact
+            ? 'px-3 py-2 text-[10px] md:px-4 md:py-2.5 md:text-xs'
+            : 'px-4 py-2.5 text-xs sm:px-5 sm:py-3')
+        }
       >
         <span>{outlet}</span>
         <ChevronDown

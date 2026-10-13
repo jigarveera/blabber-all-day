@@ -40,24 +40,19 @@ export default function MenuGridSection({
   return (
     <section
       id="menu-results"
-      className="mx-auto max-w-7xl scroll-mt-24 px-5 pb-24 pt-3 sm:px-8 lg:px-12"
+      className="mx-auto max-w-7xl scroll-mt-[290px] px-5 pb-4 sm:scroll-mt-[346px] sm:px-8 lg:px-12"
     >
-      <div className="mb-6 flex items-end justify-between gap-4">
-        <div>
-          <p className="text-[11px] font-bold uppercase tracking-[.2em] text-[#cba0bd]">
-            Made for every craving
-          </p>
-          <h2 className="mt-2 font-['Cormorant_Garamond'] text-4xl tracking-[-.04em] text-[#f5ede3] sm:text-5xl">
-            Menu
-          </h2>
-        </div>
+      <div className="mb-4 flex items-end justify-between gap-4">
+        <h2 className="font-['Cormorant_Garamond'] text-4xl tracking-[-.04em] text-[#f5ede3] sm:text-5xl">
+          Menu
+        </h2>
         <span className="pb-1 text-xs text-[#b6a9b0]">
           {items.length} {items.length === 1 ? 'dish' : 'dishes'}
         </span>
       </div>
 
       {items.length ? (
-        <div className="grid grid-cols-2 items-start gap-3 sm:gap-4 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 items-start gap-4 lg:grid-cols-3 xl:grid-cols-4">
           {items.slice(0, visibleCount).map((item, index) => (
             <MenuCard
               key={item.id}
@@ -96,7 +91,7 @@ export default function MenuGridSection({
       {hasMore && (
         <div
           ref={loadMoreRef}
-          className="mt-8 flex justify-center"
+          className="mt-4 flex justify-center"
         >
           <button
             type="button"
@@ -112,7 +107,7 @@ export default function MenuGridSection({
         </div>
       )}
 
-      <p className="mt-8 border-t border-[#4c3a46] pt-5 text-xs leading-relaxed text-[#a99aa3]">
+      <p className="mt-4 border-t border-[#4c3a46] pt-4 text-xs leading-relaxed text-[#a99aa3]">
         Menu items come from Zomato listings. Check each ordering app for
         current availability and prices.
       </p>

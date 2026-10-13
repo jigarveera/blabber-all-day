@@ -6,9 +6,9 @@ export default function OutletSection({ onSelect }) {
   return (
     <motion.section
       initial={false}
-      exit={{ height: 0, opacity: 0, paddingBottom: 0 }}
+      exit={{ height: 0, opacity: 0, paddingTop: 0, paddingBottom: 0 }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="mx-auto max-w-7xl overflow-hidden px-5 pb-7 sm:px-8 lg:px-12"
+      className="mx-auto max-w-7xl overflow-hidden px-5 pt-28 sm:px-8 sm:pt-32 lg:px-12"
     >
       <h2 className="mb-4 font-['Cormorant_Garamond'] text-3xl font-semibold text-[#f5ede3] sm:text-4xl">
         Choose your outlet

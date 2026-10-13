@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { ArrowUpRight, Check, Copy, X } from 'lucide-react'
+import { X } from 'lucide-react'
 
 export default function OrderDialog({ item, onClose }) {
-  const [copied, setCopied] = useState(false)
-
   useEffect(() => {
     const onKeyDown = (event) => {
       if (event.key === 'Escape') onClose()
@@ -16,8 +14,7 @@ export default function OrderDialog({ item, onClose }) {
   const copyName = () => {
     navigator.clipboard
       ?.writeText(item.name)
-      .then(() => setCopied(true))
-      .catch(() => setCopied(false))
+      .catch(() => {})
   }
 
   return createPortal(
@@ -31,58 +28,79 @@ export default function OrderDialog({ item, onClose }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={`order-${item.id || item.name}`}
-        className="w-full max-w-md rounded-[28px] border border-[#72566a] bg-[#282126] p-6 text-[#f5ede3] shadow-2xl sm:p-8"
+        className="relative w-full max-w-md"
       >
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[#d2a6c2]">
-              {item.outlet || 'Juhu'} menu
-            </p>
-            <h2
-              id={`order-${item.id || item.name}`}
-              className="mt-2 font-['Cormorant_Garamond'] text-3xl leading-tight"
-            >
-              {item.name}
-            </h2>
-          </div>
+        <div className="relative mb-4 flex min-h-10 items-center justify-center px-6">
+          <p className="text-center text-[10px] font-bold uppercase tracking-[.2em] text-[#e9c4db]">
+            {item.outlet || 'Juhu'} menu
+          </p>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close ordering options"
-            className="rounded-full p-2 hover:bg-[#44323f]"
+            className="absolute right-0 grid size-10 place-items-center rounded-full border border-white/35 bg-[#282126] text-white transition hover:bg-[#44323f]"
           >
             <X size={19} />
           </button>
         </div>
-        <p className="mt-4 text-sm leading-relaxed text-[#c9bcc3]">
-          Choose an app, then search its outlet menu for this dish. Availability
-          may differ between apps.
-        </p>
-        <button
-          type="button"
-          onClick={copyName}
-          className="mt-5 inline-flex items-center gap-2 rounded-full border border-[#85677a] px-4 py-2 text-xs font-semibold text-[#e2bed4] hover:bg-[#3d3039]"
+        <div
+          className="relative isolate flex flex-col gap-4 overflow-hidden rounded-[28px] border border-[#72566a] bg-[#282126] p-6 text-center text-[#f5ede3] shadow-2xl"
         >
-          {copied ? <Check size={15} /> : <Copy size={15} />}
-          {copied ? 'Dish name copied' : 'Copy dish name'}
-        </button>
-        <div className="mt-6 grid gap-3 sm:grid-cols-2">
-          {[
-            ['Zomato', item.zomatoLink],
-            ['Swiggy', item.swiggyLink],
-          ].map(([provider, link]) => (
-            <a
-              key={provider}
-              href={link}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={copyName}
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-[#cba0bd] px-5 py-3 text-sm font-bold text-[#241d20] transition hover:bg-[#e0b9d2]"
-            >
-              Open {provider}
-              <ArrowUpRight size={17} />
-            </a>
-          ))}
+          {item.image && (
+            <img
+              src={item.image}
+              alt=""
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 -z-20 h-full w-full scale-110 object-cover blur-xl"
+            />
+          )}
+          <div className="pointer-events-none absolute inset-0 -z-10 bg-[#191518]/80" />
+          <h2
+            id={`order-${item.id || item.name}`}
+            className="font-['Cormorant_Garamond'] text-3xl leading-tight"
+          >
+            {item.name}
+          </h2>
+          <p className="text-sm leading-relaxed text-[#f0e5eb]">
+            Choose an app, then search its outlet menu for this dish. Availability
+            may differ between apps.
+          </p>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {[
+              [
+                'Zomato',
+                'Open',
+                item.zomatoLink,
+                '/icons/zomato.svg',
+                'bg-[#E23744] hover:bg-[#c82e3b]',
+              ],
+              [
+                'Swiggy',
+                'Open Swiggy',
+                item.swiggyLink,
+                '/icons/swiggy.svg',
+                'bg-[#FF5200] hover:bg-[#df4800]',
+              ],
+            ].map(([provider, label, link, icon, color]) => (
+              <a
+                key={provider}
+                href={link}
+                aria-label={`Open ${provider}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={copyName}
+                className={`inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-white shadow-lg transition ${color}`}
+              >
+                {label}
+                <img
+                  src={icon}
+                  alt=""
+                  aria-hidden="true"
+                  className={provider === 'Zomato' ? 'h-5 w-12' : 'size-5'}
+                />
+              </a>
+            ))}
+          </div>
         </div>
       </div>
     </div>,
