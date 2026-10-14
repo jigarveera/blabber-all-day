@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, ArrowUpRight, Mail } from 'lucide-react'
+import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import legalPages, { contactEmail } from '../../data/legalPages'
 import outlets from '../../data/outlets'
 
@@ -125,13 +125,9 @@ export default function LegalPage({ type }) {
             </p>
             <a
               href={`mailto:${contactEmail}`}
-              className="mt-5 inline-flex max-w-full items-center gap-2 rounded-full bg-[#aa769a] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#8d5c7d]"
+              className="mt-5 inline-block max-w-full break-all rounded-full bg-[#aa769a] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#8d5c7d]"
             >
-              <Mail
-                size={17}
-                className="shrink-0"
-              />
-              <span className="min-w-0 break-all">{contactEmail}</span>
+              {contactEmail}
             </a>
             <p className="mt-5 text-xs leading-relaxed text-[#d9c4d1]">
               Blabber All Day · {outlets[0].address}
