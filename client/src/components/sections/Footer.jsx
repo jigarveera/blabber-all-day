@@ -103,6 +103,12 @@ export default function Footer() {
           >
             Reservations
           </Link>
+          <Link
+            to="/faq"
+            className="text-sm transition hover:text-[#e4bdd3]"
+          >
+            FAQs
+          </Link>
         </nav>
 
         <div>
@@ -134,9 +140,37 @@ export default function Footer() {
       </div>
 
       <div className="relative border-t border-[#785969]/60 px-5 py-5 text-[11px] text-[#bbaab5] sm:px-8 lg:px-12">
-        <div className="mx-auto flex max-w-7xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <p>© {new Date().getFullYear()} Blabber All Day · Mumbai</p>
-          <p>Juhu · Borivali · Thane</p>
+          <nav
+            aria-label="Legal links"
+            className="flex flex-wrap gap-x-5 gap-y-2"
+          >
+            <Link
+              to="/privacy-policy"
+              className="transition hover:text-white"
+            >
+              Privacy
+            </Link>
+            <Link
+              to="/cookie-policy"
+              className="transition hover:text-white"
+            >
+              Cookies
+            </Link>
+            <Link
+              to="/terms-of-use"
+              className="transition hover:text-white"
+            >
+              Terms
+            </Link>
+            <Link
+              to="/reservations-and-orders"
+              className="transition hover:text-white"
+            >
+              Reservations & orders
+            </Link>
+          </nav>
         </div>
       </div>
     </footer>

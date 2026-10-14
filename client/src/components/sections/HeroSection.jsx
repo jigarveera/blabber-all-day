@@ -2,6 +2,15 @@ import { useRef } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import HeroAction from '../ui/HeroAction'
 
+const reveal = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+  },
+}
+
 export default function HeroSection() {
   const sectionRef = useRef(null)
   const reducedMotion = useReducedMotion()
@@ -31,33 +40,46 @@ export default function HeroSection() {
 
       <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-5 pb-16 pt-32 sm:px-8 lg:px-12">
         <motion.div
-          initial={reducedMotion ? false : { opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          initial={reducedMotion ? false : 'hidden'}
+          animate="visible"
+          variants={{
+            hidden: {},
+            visible: { transition: { delayChildren: 0.15, staggerChildren: 0.16 } },
+          }}
         >
-          <p className="mb-4 text-[11px] font-bold uppercase tracking-[.26em] text-[#edcbe0] sm:mb-6">
-            Blabber All Day · Mumbai
-          </p>
-          <h1 className="max-w-5xl font-['Cormorant_Garamond'] text-[clamp(3.8rem,12vw,9.5rem)] font-semibold leading-[.78] tracking-[-.055em]">
-            Come hungry.
-            <br />
-            <span className="italic text-[#e8bfd7]">Stay for the stories.</span>
-          </h1>
-        </motion.div>
-
-        <motion.div
-          initial={reducedMotion ? false : { opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-9 grid w-full gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-4"
-        >
-          <HeroAction to="/menu">Order now</HeroAction>
-          <HeroAction
-            to="/outlet"
-            variant="light"
+          <motion.p
+            variants={reveal}
+            className="mb-4 text-[11px] font-bold uppercase tracking-[.26em] text-[#edcbe0] sm:mb-6"
           >
-            Visit now
-          </HeroAction>
+            Blabber All Day · Mumbai
+          </motion.p>
+          <h1 className="max-w-5xl font-['Cormorant_Garamond'] text-[clamp(3.8rem,12vw,9.5rem)] font-semibold leading-[.78] tracking-[-.055em]">
+            <motion.span
+              variants={reveal}
+              className="block"
+            >
+              Come hungry.
+            </motion.span>
+            <motion.span
+              variants={reveal}
+              className="block italic text-[#e8bfd7]"
+            >
+              Stay for the stories.
+            </motion.span>
+          </h1>
+          <div className="mt-9 grid w-full gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-4">
+            <motion.div variants={reveal}>
+              <HeroAction to="/menu">Order now</HeroAction>
+            </motion.div>
+            <motion.div variants={reveal}>
+              <HeroAction
+                to="/outlet"
+                variant="light"
+              >
+                Visit now
+              </HeroAction>
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>

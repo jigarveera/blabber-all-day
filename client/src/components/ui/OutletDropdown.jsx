@@ -37,10 +37,14 @@ export default function OutletDropdown({ outlet, onSelect, compact = false }) {
     >
       <motion.button
         type="button"
-        layoutId={`outlet-${outlet}`}
+        layoutId={outlet ? `outlet-${outlet}` : undefined}
         transition={{ type: 'spring', stiffness: 260, damping: 28 }}
         onClick={() => setOpen((current) => !current)}
-        aria-label={`Selected outlet: ${outlet}. Choose another outlet`}
+        aria-label={
+          outlet
+            ? `Selected outlet: ${outlet}. Choose another outlet`
+            : 'Choose an outlet'
+        }
         aria-expanded={open}
         aria-controls="outlet-dropdown"
         className={
@@ -50,7 +54,7 @@ export default function OutletDropdown({ outlet, onSelect, compact = false }) {
             : 'px-4 py-2.5 text-xs sm:px-5 sm:py-3')
         }
       >
-        <span>{outlet}</span>
+        <span>{outlet || 'Outlet'}</span>
         <ChevronDown
           size={16}
           className={

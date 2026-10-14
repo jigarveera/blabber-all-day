@@ -88,10 +88,10 @@ export default function OutletDetailSection({ outlet }) {
                   Write to us
                 </h3>
                 <a
-                  href="mailto:reservations@blabberallday.com"
+                  href="mailto:blabberreservations@gmail.com"
                   className="mt-2 block text-sm font-semibold text-[#473a43] hover:text-[#9a6689]"
                 >
-                  reservations@blabberallday.com
+                  blabberreservations@gmail.com
                 </a>
               </div>
             </div>

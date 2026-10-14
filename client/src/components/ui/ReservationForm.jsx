@@ -1,5 +1,6 @@
 import { useId, useRef, useState } from 'react'
 import { ArrowUpRight, CalendarDays } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import outlets from '../../data/outlets'
 import { WHATSAPP_PHONE } from '../../data/socials'
 import {
@@ -106,7 +107,7 @@ export default function ReservationForm({ defaultOutlet = '' }) {
       <div className="mb-8 flex items-start justify-between gap-4 border-b border-[#e7dce3] pb-6">
         <div>
           <h3 className="font-['Cormorant_Garamond'] text-4xl font-semibold leading-none text-[#2b2029] sm:text-5xl">
-            Request a <span className="italic text-[#aa769a]">table.</span>
+            Reserve your <span className="italic text-[#aa769a]">table.</span>
           </h3>
         </div>
         <span className="grid size-11 shrink-0 place-items-center rounded-full bg-[#ead9e4] text-[#885d79]">
@@ -302,7 +303,14 @@ export default function ReservationForm({ defaultOutlet = '' }) {
           </button>
           <p className="mt-3 text-center text-xs leading-relaxed text-[#73616d]">
             Send the prepared message to request your table. Your reservation is
-            confirmed only when our team replies.
+            confirmed only when our team replies.{' '}
+            <Link
+              to="/privacy-policy"
+              className="font-semibold text-[#885d79] underline underline-offset-2"
+            >
+              Privacy policy
+            </Link>
+            .
           </p>
           {handoffUrl && (
             <p

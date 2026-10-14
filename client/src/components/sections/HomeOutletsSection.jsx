@@ -1,115 +1,174 @@
-import { useRef } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useInView, useReducedMotion } from 'framer-motion'
 import outlets from '../../data/outlets'
 import OutletLocationCard from '../ui/OutletLocationCard'
 
-export default function HomeOutletsSection() {
-  const stackRef = useRef(null)
-  const reducedMotion = useReducedMotion()
-  const { scrollYProgress } = useScroll({
-    target: stackRef,
-    offset: ['start start', 'end end'],
-  })
+const carouselOutlets = [outlets[outlets.length - 1], ...outlets, outlets[0]]
+const lastRealIndex = outlets.length
+const lastCarouselIndex = carouselOutlets.length - 1
 
-  const firstScale = useTransform(
-    scrollYProgress,
-    [0, 0.12, 0.48, 0.55, 0.88, 1],
-    [1, 1, 0.94, 0.94, 0.88, 0.88],
+export default function HomeOutletsSection() {
+  const sectionRef = useRef(null)
+  const trackRef = useRef(null)
+  const activeIndexRef = useRef(1)
+  const scrollEndTimerRef = useRef(null)
+  const pausedUntilRef = useRef(0)
+  const hoveredRef = useRef(false)
+  const [activeIndex, setActiveIndex] = useState(1)
+  const inView = useInView(sectionRef, { amount: 0.15 })
+  const reducedMotion = useReducedMotion()
+
+  const showOutlet = useCallback(
+    (index, behavior = 'smooth') => {
+      const track = trackRef.current
+      const card = track?.children[index]
+      if (!track || !card) return
+
+      activeIndexRef.current = index
+      setActiveIndex(index)
+      track.scrollTo({
+        left: card.offsetLeft + card.offsetWidth / 2 - track.clientWidth / 2,
+        behavior: reducedMotion || behavior === 'instant' ? 'instant' : 'smooth',
+      })
+    },
+    [reducedMotion],
   )
-  const firstY = useTransform(
-    scrollYProgress,
-    [0, 0.12, 0.48, 0.55, 0.88, 1],
-    [0, 0, -24, -24, -48, -48],
-  )
-  const secondY = useTransform(
-    scrollYProgress,
-    [0, 0.12, 0.48, 0.55, 0.88, 1],
-    ['120vh', '120vh', '0vh', '0vh', '-3vh', '-3vh'],
-  )
-  const secondScale = useTransform(
-    scrollYProgress,
-    [0, 0.55, 0.88, 1],
-    [1, 1, 0.95, 0.95],
-  )
-  const thirdY = useTransform(
-    scrollYProgress,
-    [0, 0.55, 0.88, 1],
-    ['120vh', '120vh', '0vh', '0vh'],
-  )
-  const cardStyles = [
-    { scale: firstScale, y: firstY },
-    { scale: secondScale, y: secondY },
-    { y: thirdY },
-  ]
-  const heading = (
-    <h2
-      id="home-outlets-heading"
-      className="mx-auto max-w-5xl font-['Cormorant_Garamond'] text-[clamp(2.75rem,11vw,3.8rem)] font-semibold leading-[.85] tracking-[-.05em] md:text-[clamp(3.8rem,8vw,8rem)]"
-    >
-      Find a place to <span className="italic text-[#d6a8c5]">linger.</span>
-    </h2>
-  )
+
+  const normalizeLoop = useCallback(() => {
+    if (activeIndexRef.current === 0) {
+      showOutlet(lastRealIndex, 'instant')
+    } else if (activeIndexRef.current === lastCarouselIndex) {
+      showOutlet(1, 'instant')
+    }
+  }, [showOutlet])
+
+  useLayoutEffect(() => {
+    showOutlet(1, 'instant')
+  }, [showOutlet])
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return undefined
+
+    track.addEventListener('scrollend', normalizeLoop)
+    return () => {
+      track.removeEventListener('scrollend', normalizeLoop)
+      window.clearTimeout(scrollEndTimerRef.current)
+    }
+  }, [normalizeLoop])
+
+  useEffect(() => {
+    if (!inView || reducedMotion) return undefined
+
+    const timer = window.setInterval(() => {
+      if (
+        Date.now() < pausedUntilRef.current ||
+        hoveredRef.current ||
+        trackRef.current?.contains(document.activeElement) ||
+        document.querySelector('[role="dialog"][aria-modal="true"]')
+      )
+        return
+
+      showOutlet(activeIndexRef.current + 1)
+    }, 4800)
+
+    return () => window.clearInterval(timer)
+  }, [inView, reducedMotion, showOutlet])
+
+  const pauseAutoplay = () => {
+    pausedUntilRef.current = Date.now() + 8000
+  }
+
+  const updateActiveIndex = () => {
+    const track = trackRef.current
+    if (!track) return
+
+    const center = track.scrollLeft + track.clientWidth / 2
+    let nearest = 0
+    let distance = Infinity
+
+    Array.from(track.children).forEach((card, index) => {
+      const nextDistance = Math.abs(
+        card.offsetLeft + card.offsetWidth / 2 - center,
+      )
+      if (nextDistance < distance) {
+        distance = nextDistance
+        nearest = index
+      }
+    })
+
+    activeIndexRef.current = nearest
+    setActiveIndex(nearest)
+    window.clearTimeout(scrollEndTimerRef.current)
+    scrollEndTimerRef.current = window.setTimeout(normalizeLoop, 200)
+  }
 
   return (
     <section
+      ref={sectionRef}
       data-header-theme="dark"
       aria-labelledby="home-outlets-heading"
-      className="relative bg-[#251b24] text-[#f8f2ec]"
+      className="relative flex min-h-[100svh] flex-col overflow-hidden bg-[#251b24] pb-6 pt-[104px] text-[#f8f2ec] sm:pb-10 sm:pt-32"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_15%,rgba(170,118,154,.22),transparent_42%),radial-gradient(circle_at_100%_70%,rgba(116,67,99,.28),transparent_45%)]" />
-      {reducedMotion ? (
+      <h2
+        id="home-outlets-heading"
+        className="relative mx-auto max-w-5xl px-5 text-center font-['Cormorant_Garamond'] text-[clamp(2.75rem,11vw,3.8rem)] font-semibold leading-[.85] tracking-[-.05em] md:text-[clamp(3.8rem,8vw,8rem)]"
+      >
+        Find a place to <span className="italic text-[#d6a8c5]">linger.</span>
+      </h2>
+
+      <div className="relative flex min-h-0 flex-1 items-center">
         <div
-          ref={stackRef}
-          className="relative pb-24"
+          ref={trackRef}
+          role="region"
+          aria-roledescription="carousel"
+          aria-label="Blabber All Day outlets"
+          onScroll={updateActiveIndex}
+          onPointerDown={pauseAutoplay}
+          onWheel={pauseAutoplay}
+          onMouseEnter={() => {
+            hoveredRef.current = true
+          }}
+          onMouseLeave={() => {
+            hoveredRef.current = false
+          }}
+          onFocusCapture={pauseAutoplay}
+          className="relative mx-auto flex w-full max-w-[960px] snap-x snap-mandatory items-center gap-4 overflow-x-auto px-[calc(50%-min(37.5vw,190px))] py-12 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          <div className="sticky top-0 z-10 bg-[#251b24] px-5 pb-5 pt-[104px] text-center sm:px-8 lg:px-12">
-            {heading}
-          </div>
-          <div className="relative mx-auto grid max-w-[460px] gap-5 px-5 sm:px-8">
-            {outlets.map((outlet, index) => (
-              <OutletLocationCard
-                key={outlet.slug}
-                outlet={outlet}
-                index={index}
-                headingLevel="h3"
-                compact
-              />
-            ))}
-          </div>
+          {carouselOutlets.map((outlet, index) => {
+            const clone = index === 0 || index === lastCarouselIndex
+
+            return (
+              <div
+                key={`${outlet.slug}-${index}`}
+                role={clone ? undefined : 'group'}
+                aria-roledescription={clone ? undefined : 'slide'}
+                aria-label={
+                  clone
+                    ? undefined
+                    : `${index} of ${outlets.length}: ${outlet.name}`
+                }
+                aria-hidden={clone || undefined}
+                inert={clone}
+                className={
+                  'relative flex w-[min(75vw,380px)] shrink-0 snap-center px-2 transition-transform duration-700 ease-out motion-reduce:transition-none ' +
+                  (activeIndex === index ? 'z-10 scale-110' : 'z-0 scale-100')
+                }
+              >
+                <OutletLocationCard
+                  outlet={outlet}
+                  index={(index - 1 + outlets.length) % outlets.length}
+                  headingLevel="h3"
+                  uniformHeight
+                  autoStart
+                  disableEntrance
+                />
+              </div>
+            )
+          })}
         </div>
-      ) : (
-        <div
-          ref={stackRef}
-          className="relative h-[280svh]"
-        >
-          <div className="sticky top-0 flex h-[100svh] flex-col overflow-hidden px-5 pb-6 pt-[104px] sm:px-8 lg:px-12">
-            <div className="relative z-10 mx-auto w-full max-w-7xl text-center">
-              {heading}
-            </div>
-            <div className="relative mx-auto flex min-h-0 w-full max-w-[420px] flex-1 items-center justify-center">
-              {outlets.map((outlet, index) => (
-                <div
-                  key={outlet.slug}
-                  className="pointer-events-none absolute inset-0 flex items-center justify-center"
-                  style={{ zIndex: index + 1 }}
-                >
-                  <motion.div
-                    className="pointer-events-auto w-full origin-center will-change-transform"
-                    style={cardStyles[index]}
-                  >
-                    <OutletLocationCard
-                      outlet={outlet}
-                      index={index}
-                      headingLevel="h3"
-                      compact
-                    />
-                  </motion.div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </section>
   )
 }

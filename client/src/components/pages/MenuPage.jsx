@@ -109,10 +109,10 @@ export default function MenuPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#191518] text-[#f5ede3]">
+    <div className="min-h-screen bg-[#191518] text-[#f5ede3] [overflow-anchor:none]">
       <LayoutGroup id="menu-outlet-selection">
         <AnimatePresence initial={false}>
-          {!outlet && (
+          {!outlet && !compact && (
             <OutletSection
               key="outlet-selection"
               onSelect={selectOutlet}

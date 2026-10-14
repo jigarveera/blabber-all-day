@@ -10,6 +10,30 @@ const MenuPage = lazy(() => import('./components/pages/MenuPage'))
 const OutletsPage = lazy(() => import('./components/pages/OutletsPage'))
 const OutletPage = lazy(() => import('./components/pages/OutletPage'))
 const ReservationPage = lazy(() => import('./components/pages/ReservationPage'))
+const LegalPage = lazy(() => import('./components/pages/LegalPage'))
+const FaqPage = lazy(() => import('./components/pages/FaqPage'))
+
+function PageReady({ children }) {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    let secondFrame
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
+        window.dispatchEvent(
+          new CustomEvent('blabber:page-ready', { detail: { pathname } }),
+        )
+      })
+    })
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame)
+      window.cancelAnimationFrame(secondFrame)
+    }
+  }, [pathname])
+
+  return children
+}
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -29,27 +53,91 @@ export default function App() {
           <Routes>
             <Route
               path="/"
-              element={<HomePage />}
+              element={
+                <PageReady>
+                  <HomePage />
+                </PageReady>
+              }
             />
             <Route
               path="/menu"
-              element={<MenuPage />}
+              element={
+                <PageReady>
+                  <MenuPage />
+                </PageReady>
+              }
             />
             <Route
               path="/outlet"
-              element={<OutletsPage />}
+              element={
+                <PageReady>
+                  <OutletsPage />
+                </PageReady>
+              }
             />
             <Route
               path="/outlet/:slug"
-              element={<OutletPage />}
+              element={
+                <PageReady>
+                  <OutletPage />
+                </PageReady>
+              }
             />
             <Route
               path="/reservation"
-              element={<ReservationPage />}
+              element={
+                <PageReady>
+                  <ReservationPage />
+                </PageReady>
+              }
+            />
+            <Route
+              path="/faq"
+              element={
+                <PageReady>
+                  <FaqPage />
+                </PageReady>
+              }
+            />
+            <Route
+              path="/privacy-policy"
+              element={
+                <PageReady>
+                  <LegalPage type="privacy" />
+                </PageReady>
+              }
+            />
+            <Route
+              path="/cookie-policy"
+              element={
+                <PageReady>
+                  <LegalPage type="cookies" />
+                </PageReady>
+              }
+            />
+            <Route
+              path="/terms-of-use"
+              element={
+                <PageReady>
+                  <LegalPage type="terms" />
+                </PageReady>
+              }
+            />
+            <Route
+              path="/reservations-and-orders"
+              element={
+                <PageReady>
+                  <LegalPage type="reservations" />
+                </PageReady>
+              }
             />
             <Route
               path="*"
-              element={<HomePage />}
+              element={
+                <PageReady>
+                  <HomePage />
+                </PageReady>
+              }
             />
           </Routes>
         </Suspense>

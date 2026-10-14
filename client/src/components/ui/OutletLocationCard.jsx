@@ -16,9 +16,12 @@ export default function OutletLocationCard({
   index = 0,
   headingLevel = 'h2',
   compact = false,
+  uniformHeight = false,
+  autoStart = false,
+  disableEntrance = false,
 }) {
   const Heading = headingLevel
-  const [started, setStarted] = useState(false)
+  const [started, setStarted] = useState(autoStart)
   const [phase, setPhase] = useState('map')
   const [orderOpen, setOrderOpen] = useState(false)
   const reducedMotion = useReducedMotion()
@@ -48,8 +51,8 @@ export default function OutletLocationCard({
 
   return (
     <motion.article
-      initial={reducedMotion ? false : { opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={disableEntrance || reducedMotion ? false : { opacity: 0, y: 28 }}
+      whileInView={disableEntrance ? undefined : { opacity: 1, y: 0 }}
       onViewportEnter={() => setStarted(true)}
       viewport={{ once: true, amount: 0.15 }}
       transition={
@@ -57,10 +60,10 @@ export default function OutletLocationCard({
           ? { duration: 0 }
           : { delay: index * 0.14, duration: 0.55, ease: [0.22, 1, 0.36, 1] }
       }
-      className={`overflow-hidden rounded-[28px] border border-[#dcc9d5] bg-[#fffaf5] shadow-[0_18px_50px_rgba(43,32,41,.08)] ${compact ? 'flex h-[clamp(424px,calc(56.25vw+205px),464px)] flex-col md:h-[614px]' : ''}`}
+      className={`overflow-hidden rounded-[28px] border border-[#dcc9d5] bg-[#fffaf5] shadow-[0_18px_50px_rgba(43,32,41,.08)] ${compact ? 'flex h-[clamp(424px,calc(56.25vw+205px),464px)] flex-col md:h-[614px]' : uniformHeight ? 'flex w-full flex-1 flex-col' : ''}`}
     >
       <div
-        className={`relative overflow-hidden bg-[#332631] ${compact ? 'aspect-[16/9] shrink-0 md:aspect-[5/4]' : 'aspect-[5/4]'}`}
+        className={`relative overflow-hidden bg-[#332631] ${compact ? 'aspect-[16/9] shrink-0 md:aspect-[5/4]' : uniformHeight ? 'aspect-[5/4] shrink-0' : 'aspect-[5/4]'}`}
       >
         <motion.div
           initial={false}
@@ -103,7 +106,7 @@ export default function OutletLocationCard({
       </div>
 
       <div
-        className={`flex flex-col ${compact ? 'flex-1 gap-2 p-4 md:gap-4 md:p-6' : 'gap-4 p-6'}`}
+        className={`flex flex-col ${compact ? 'flex-1 gap-2 p-4 md:gap-4 md:p-6' : uniformHeight ? 'flex-1 gap-4 p-4 sm:p-6' : 'gap-4 p-6'}`}
       >
         <Heading
           className={`font-['Cormorant_Garamond'] font-semibold leading-none text-[#2b2029] ${compact ? 'text-2xl md:text-3xl' : 'text-3xl'}`}
@@ -117,10 +120,10 @@ export default function OutletLocationCard({
           <Phone size={16} />
           {outlet.phone}
         </p>
-        <div className={`grid grid-cols-2 gap-3 pt-2 ${compact ? 'mt-auto' : ''}`}>
+        <div className={`grid grid-cols-2 gap-3 pt-2 ${compact || uniformHeight ? 'mt-auto' : ''}`}>
           <a
             href={`tel:${outlet.phone.replace(/\s/g, '')}`}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full border border-[#b78da8] px-3 text-xs font-bold uppercase tracking-[.07em] text-[#694962] transition hover:bg-[#f0e1eb]"
+            className={`inline-flex min-h-12 items-center justify-center whitespace-nowrap rounded-full border border-[#b78da8] font-bold uppercase tracking-[.07em] text-[#694962] transition hover:bg-[#f0e1eb] ${uniformHeight ? 'gap-1 px-2 text-[10px] sm:gap-2 sm:px-3 sm:text-xs' : 'gap-2 px-3 text-xs'}`}
           >
             Call now
             <Phone size={16} />
@@ -128,7 +131,7 @@ export default function OutletLocationCard({
           <button
             type="button"
             onClick={() => setOrderOpen(true)}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#aa769a] px-3 text-xs font-bold uppercase tracking-[.07em] text-white transition hover:bg-[#8d5c7d]"
+            className={`inline-flex min-h-12 items-center justify-center whitespace-nowrap rounded-full bg-[#aa769a] font-bold uppercase tracking-[.07em] text-white transition hover:bg-[#8d5c7d] ${uniformHeight ? 'gap-1 px-2 text-[10px] sm:gap-2 sm:px-3 sm:text-xs' : 'gap-2 px-3 text-xs'}`}
           >
             Order now
             <ShoppingBag size={16} />
